@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-serif: 'Instrument Serif', serif;
+  --font-sans: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #0a0a0a;
+}
+body {
+  font-family: var(--font-sans);
+  color: #e8e8e6;
+  background: #0a0a0a;
+  cursor: none;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: #e8e8e6; color: #0a0a0a; }
+
+.grain::after {
+  content: ''; position: fixed; inset: -50%; pointer-events: none; z-index: 60; opacity: .07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1s steps(4) infinite;
+}
+@keyframes grain { 0%{transform:translate(0,0)} 25%{transform:translate(-3%,2%)} 50%{transform:translate(2%,-3%)} 75%{transform:translate(-2%,-1%)} }
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee { animation: marquee 30s linear infinite; }
+@media (hover: none) { body { cursor: auto; } }
+
+/* Light sections flip Tailwind's white/black tokens so existing utilities invert */
+.light { --color-white: #141414; --color-black: #ece8e1; color: #141414; }
+.dark-scope { --color-white: #fff; --color-black: #000; color: #e8e8e6; }

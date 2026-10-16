@@ -1,0 +1,48 @@
+const projects = [
+  {
+    title: 'Heat Detection & Smart Canopy',
+    tag: 'Satellite · Maps',
+    year: '2025',
+    description: 'A website used for heat detection and smart canopy monitoring of Chitradurga.',
+    stack: ['Next.js', 'React', 'JavaScript', 'Tailwind CSS'],
+    image: '/projects/savedurga.png',
+    tint: '#0f3a40',
+    live: 'https://savedurga.vercel.app/',
+    code: '',
+  },
+  {
+    title: 'Interview Simulator',
+    tag: 'AI · Education',
+    year: '2025',
+    description: 'A website that helps students practise interviews with AI assistance.',
+    stack: ['Next.js', 'React', 'JavaScript', 'Tailwind CSS'],
+    image: '/projects/interview.png',
+    tint: '#1c2140',
+    live: 'https://micropresentation-simulator.vercel.app/',
+    code: '',
+  },
+  {
+    title: "Cousin's Portfolio Website",
+    tag: 'Portfolio · Design',
+    year: '2025',
+    description: "A portfolio website to showcase my sister's artworks.",
+    stack: ['Next.js', 'React', 'JavaScript', 'Tailwind CSS'],
+    image: '/projects/pooja.png',
+    tint: '#3d1a1f',
+    live: 'https://pooja-kalvem.vercel.app/',
+    code: '',
+  },
+  {
+    title: 'Guessing Game',
+    tag: 'AI · Multiplayer',
+    year: '2025',
+    description: 'An AI-based multiplayer word guessing game.',
+    stack: ['Next.js', 'React', 'JavaScript', 'Tailwind CSS'],
+    image: '/projects/bxlu.png',
+    tint: '#2a1745',
+    live: 'https://bxlu-game.vercel.app/',
+    code: '',
+  },
+]
+
+export default projects
