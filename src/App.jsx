@@ -431,13 +431,13 @@ export default function App() {
 
       {/* CAPABILITIES */}
       <section data-theme="light" className={`light relative z-10 ${pad} py-8 min-[360px]:py-10 sm:py-20 md:py-32 max-w-[1500px] mx-auto`}>
-        <div className="grid lg:grid-cols-12 gap-6 sm:gap-10">
-          <div className="lg:col-span-5">
+        <div className="grid lg:grid-cols-12 gap-6 sm:gap-10 lg:items-center">
+          <div className="lg:col-span-5 flex flex-col justify-center">
             <h2 className="text-3xl min-[360px]:text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05]">
               <Lines>Complex</Lines><Lines delay={0.08}>functionality,</Lines><Lines delay={0.16} className="font-serif italic font-normal text-white/50">built in.</Lines>
             </h2>
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.2, ease }}
-              className="mt-5 sm:mt-8 p-3.5 min-[360px]:p-4.5 sm:p-6 rounded-r-2xl bg-white/[0.04] sm:bg-white/[0.05] border border-white/10 border-l-[3.5px] sm:border-l-4 border-l-white shadow-[0_8px_30px_rgba(20,20,20,0.03)] w-full max-w-xl">
+              className="mt-5 sm:mt-8 p-4 min-[360px]:p-5 sm:p-6 rounded-2xl bg-white/[0.04] sm:bg-white/[0.05] border border-white/15 border-l-4 border-l-white shadow-[0_8px_30px_rgba(20,20,20,0.04)] w-full max-w-xl">
               <p className="text-sm min-[360px]:text-base sm:text-xl md:text-2xl lg:text-[1.38rem] xl:text-[1.55rem] text-white/85 leading-snug sm:leading-[1.36] tracking-tight">
                 Features that make projects which are <span className="text-white font-semibold underline decoration-white/30 underline-offset-[5px] decoration-2">smart, connected, secure</span> and <span className="font-serif italic font-normal text-white">ready to use.</span>
               </p>
