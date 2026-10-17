@@ -90,8 +90,8 @@ function Rotator({ words }) {
 }
 
 // Designed semicircle around the portrait: draws in, then words pop one by one
-const ARC = { w: 1500, h: 1283, cx: 750, cy: 1040, r: 700, start: 0, dur: 2.2 }
-const arcWords = [[0.08, 'Strategy'], [0.2, 'Finance'], [0.32, 'Operations'], [0.68, 'Systems'], [0.8, 'Analytics'], [0.92, 'Data']]
+const ARC = { w: 1500, h: 1283, cx: 750, cy: 1040, r: 665, start: 0, dur: 2.2 }
+const arcWords = [[0.135, 'Strategy'], [0.235, 'Finance'], [0.335, 'Operations'], [0.665, 'Systems'], [0.765, 'Analytics'], [0.865, 'Data']]
 const arcD = (r) => `M ${ARC.cx - r} ${ARC.cy} A ${r} ${r} 0 0 1 ${ARC.cx + r} ${ARC.cy}`
 function Arc({ style }) {
   const { w, h, cx, cy, r, start, dur } = ARC
