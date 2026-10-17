@@ -190,7 +190,7 @@ function Hero() {
         <div className="col-span-2 lg:col-span-5">
           <Lines now delay={0.9} className="font-mono text-[9px] min-[360px]:text-[10px] sm:text-[11px] uppercase tracking-[0.2em] min-[360px]:tracking-[0.3em] font-medium text-[#2b2b2b]">Digital Portfolio</Lines>
           <h2 className="mt-2 sm:mt-4 text-xl min-[320px]:text-2xl min-[400px]:text-3xl sm:text-4xl lg:text-[2.9rem] xl:text-5xl font-semibold tracking-tight leading-[1.08]">
-            <Lines now delay={1}>Where business &amp; management</Lines>
+            <Lines now delay={1}>Where business &amp; management learning</Lines>
             <Lines now delay={1.08} className="font-serif italic font-normal text-[#141414]/50">meets tech.</Lines>
           </h2>
         </div>
@@ -199,7 +199,7 @@ function Hero() {
             <Lines now delay={1.1}>BBA Honors student at</Lines>
             <Lines now delay={1.15}>T. A. Pai Management Institute, Bengaluru,</Lines>
             <Lines now delay={1.2}>building robust projects with</Lines>
-            <Lines now delay={1.25}>React, Next.js and MongoDB.</Lines>
+            <Lines now delay={1.25}>React, Next.js and MongoDB, and more.</Lines>
           </div>
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.5, duration: 0.8, ease }}
             className="mt-3 sm:mt-5 flex flex-wrap lg:justify-end items-center gap-2 relative z-20 pointer-events-auto">
@@ -436,8 +436,12 @@ export default function App() {
             <h2 className="text-3xl min-[360px]:text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05]">
               <Lines>Complex</Lines><Lines delay={0.08}>functionality,</Lines><Lines delay={0.16} className="font-serif italic font-normal text-white/50">built in.</Lines>
             </h2>
-            <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.2, ease }}
-              className="mt-4 sm:mt-8 text-sm min-[360px]:text-base sm:text-lg md:text-xl text-white/80 leading-relaxed max-w-md border-l-2 border-white/60 pl-3.5 sm:pl-5">Features that make projects which are <span className="text-white font-medium">smart, connected, secure</span> and <span className="font-serif italic text-white">ready to use.</span></motion.p>
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.2, ease }}
+              className="mt-5 sm:mt-8 p-3.5 min-[360px]:p-4.5 sm:p-6 rounded-r-2xl bg-white/[0.04] sm:bg-white/[0.05] border border-white/10 border-l-[3.5px] sm:border-l-4 border-l-white shadow-[0_8px_30px_rgba(20,20,20,0.03)] w-full max-w-xl">
+              <p className="text-sm min-[360px]:text-base sm:text-xl md:text-2xl lg:text-[1.38rem] xl:text-[1.55rem] text-white/85 leading-snug sm:leading-[1.36] tracking-tight">
+                Features that make projects which are <span className="text-white font-semibold underline decoration-white/30 underline-offset-[5px] decoration-2">smart, connected, secure</span> and <span className="font-serif italic font-normal text-white">ready to use.</span>
+              </p>
+            </motion.div>
           </div>
           <div className="lg:col-span-7 grid sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded-xl overflow-hidden">
             {[['AI integration', 'Intelligent features, from LLM assistants to automation.'], ['2D & 3D maps', 'Interactive geospatial rendering that turns data into insight.'],
