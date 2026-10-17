@@ -325,7 +325,7 @@ function ContactForm({ open, onClose }) {
   const submit = (e) => {
     e.preventDefault()
     const d = new FormData(e.currentTarget)
-    window.location.href = `mailto:hello@example.com?subject=${encodeURIComponent(d.get('subject') || 'Hello from your portfolio')}&body=${encodeURIComponent(`${d.get('message')}\n\n— ${d.get('name')} (${d.get('email')})`)}`
+    window.location.href = `mailto:balakrishnakalvehalli@gmail.com?subject=${encodeURIComponent(d.get('subject') || 'Hello from your portfolio')}&body=${encodeURIComponent(`${d.get('message')}\n\n— ${d.get('name')} (${d.get('email')})`)}`
     setSent(true)
   }
   const field = 'w-full bg-transparent border-b border-white/20 focus:border-white outline-none py-3 sm:py-4 text-base sm:text-xl placeholder:text-white/25 transition-colors'
@@ -423,7 +423,7 @@ export default function App() {
       {/* ABOUT — scroll-lit manifesto */}
       <section id="about" data-theme="dark" className={`relative z-10 ${pad} pt-8 min-[360px]:pt-10 sm:pt-28 md:pt-44 pb-8 min-[360px]:pb-10 sm:pb-20 max-w-[1500px] mx-auto`}>
         <Label n="01" t="About" />
-        <ScrollText text="I'm a BBA Honors student at T. A. Pai Management Institute, Bengaluru with a strong parallel focus on _modern _technology. I bring _business and _management learning together with _tech — taking requirements and turning them into _robust products." />
+        <ScrollText text="I'm a BBA Honors student at T. A. Pai Management Institute, Bengaluru with a strong parallel focus on _modern _technology. I bring _business and _management learning together with _tech — taking requirements and turning them into _robust projects." />
         <div className="grid md:grid-cols-3 gap-5 sm:gap-10 md:gap-8 mt-6 min-[360px]:mt-8 sm:mt-24 md:mt-36">
           {pillars.map(([t, d], i) => <Pillar key={t} t={t} d={d} i={i} />)}
         </div>
@@ -494,9 +494,9 @@ export default function App() {
             </button>
           </div>
           <div className="flex flex-wrap gap-2 sm:gap-3">
-            <Magnetic href="mailto:hello@example.com" solid>Email me</Magnetic>
-            <Magnetic href="https://www.linkedin.com/">LinkedIn</Magnetic>
-            <Magnetic href="https://github.com/">GitHub</Magnetic>
+            <Magnetic href="mailto:balakrishnakalvehalli@gmail.com" solid>Email me</Magnetic>
+            <Magnetic href="https://www.linkedin.com/in/balakrishna-k-r-a9b2ba284/">LinkedIn</Magnetic>
+            <Magnetic href="https://github.com/balakrishna-kr">GitHub</Magnetic>
           </div>
         </div>
         <footer className="mt-12 min-[360px]:mt-16 sm:mt-28 md:mt-36 pt-6 border-t border-white/15 flex flex-col sm:flex-row gap-3 justify-between font-mono text-[10px] sm:text-[11px] text-white/40 uppercase tracking-[0.15em] sm:tracking-[0.2em]">
