@@ -215,7 +215,7 @@ function Hero() {
 
       {/* name sits where the upper body fades - solid under-layer */}
       <motion.div style={{ y: nameY, opacity: nameOp, x: nx }} className="absolute inset-x-0 bottom-[3.5%] sm:bottom-[5%] lg:bottom-[7%] px-2 sm:px-6 pointer-events-none select-none z-[8]">
-        <motion.h1 style={{ letterSpacing: nameSpread }} aria-label="Balakrishna"
+        <motion.h1 style={{ letterSpacing: nameSpread }} aria-label="Balakrishna KR - Portfolio"
           className="flex justify-center font-semibold leading-[0.8] text-[14.8vw] sm:text-[14.2vw] lg:text-[12.4vw] 2xl:text-[13.5rem] text-[#141414] whitespace-nowrap">
           {letters.map((l, i) => (
             <span key={i} className="inline-block overflow-hidden pb-[0.04em]">
