@@ -21,10 +21,22 @@ function Cover({ p, i }) {
     </div>
   )
   return (
-    <div className="w-full h-full relative overflow-hidden bg-[#141414]">
-      <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 70% 20%, #3a3a3a, transparent 60%)' }} />
-      <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
-      <span className="absolute bottom-4 right-6 font-serif italic text-[7rem] md:text-[10rem] leading-none text-white/10">0{i + 1}</span>
+    <div className="w-full h-full relative overflow-hidden bg-[#121214] flex flex-col justify-between p-6 sm:p-10 border border-white/5" style={{ background: `radial-gradient(120% 90% at 30% 10%, ${p.tint || '#181b24'}, transparent 65%), #0b0b0d` }}>
+      <div className="absolute inset-0 opacity-[0.1]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
+      <div className="relative z-10 flex items-center justify-between font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-white/40">
+        <span>Slide 0{i + 1}</span>
+        <span className="px-2.5 py-0.5 rounded-full border border-white/10 bg-white/[0.03]">Coursework</span>
+      </div>
+      <div className="relative z-10 my-auto text-center py-6">
+        <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-white/40 mb-2 sm:mb-3">TAPMI Bengaluru</p>
+        <h4 className="font-serif italic text-2xl sm:text-4xl lg:text-5xl text-white/80">{p.title}</h4>
+        <p className="mt-3 text-xs sm:text-sm text-white/50 max-w-md mx-auto">Slides, research &amp; project media will be showcased here.</p>
+      </div>
+      <div className="relative z-10 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.2em] text-white/30 pt-4 border-t border-white/10">
+        <span>Status · In Progress</span>
+        <span>2025</span>
+      </div>
+      <span className="absolute bottom-2 right-4 font-serif italic text-[7rem] md:text-[10rem] leading-none text-white/[0.04] pointer-events-none select-none">0{i + 1}</span>
     </div>
   )
 }
@@ -61,13 +73,13 @@ function Card({ p, i, progress, n, onOpen }) {
   )
 }
 
-export default function ProjectViewer() {
+export default function ProjectViewer({ id = 'projects', label = '05 — Selected Work', title = 'My projects', items = projects }) {
   const section = useRef(), track = useRef()
   const [open, setOpen] = useState(null)
   const [dist, setDist] = useState(0)
   const [active, setActive] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
-  const n = projects.length
+  const n = items.length
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640)
@@ -87,7 +99,7 @@ export default function ProjectViewer() {
       window.removeEventListener('resize', m)
       clearTimeout(t)
     }
-  }, [])
+  }, [items])
 
   const { scrollYProgress } = useScroll({ target: section, offset: ['start start', 'end end'] })
   const p = useSpring(scrollYProgress, { stiffness: 90, damping: 24, mass: 0.4 })
@@ -97,6 +109,7 @@ export default function ProjectViewer() {
   // Jump the page so the chosen project centres (user can also just scroll / drag)
   const goTo = (i) => {
     const el = section.current
+    if (!el) return
     const top = el.offsetTop + (el.offsetHeight - window.innerHeight) * (i / Math.max(1, n - 1))
     window.scrollTo({ top, behavior: 'smooth' })
   }
@@ -104,20 +117,20 @@ export default function ProjectViewer() {
   useEffect(() => {
     const k = (e) => {
       if (e.key === 'Escape') setOpen(null)
-      const r = section.current.getBoundingClientRect()
-      if (open !== null || r.top > 10 || r.bottom < window.innerHeight - 10) return
+      const r = section.current?.getBoundingClientRect()
+      if (!r || open !== null || r.top > 10 || r.bottom < window.innerHeight - 10) return
       if (e.key === 'ArrowRight') { e.preventDefault(); goTo(Math.min(n - 1, active + 1)) }
       if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(Math.max(0, active - 1)) }
     }
     window.addEventListener('keydown', k)
     return () => window.removeEventListener('keydown', k)
-  }, [active, open])
+  }, [active, open, n])
 
   // Dragging the track converts into page scroll
   const drag = useRef(null)
   const onDown = (e) => { drag.current = { x: e.clientX, y: window.scrollY, moved: false } }
   const onMove = (e) => {
-    if (!drag.current) return
+    if (!drag.current || !section.current) return
     const dx = e.clientX - drag.current.x
     if (Math.abs(dx) > 4) drag.current.moved = true
     const ratio = (section.current.offsetHeight - window.innerHeight) / Math.max(1, dist)
@@ -128,12 +141,12 @@ export default function ProjectViewer() {
 
   return (
     <>
-      <section id="projects" data-theme="dark" ref={section} className="relative z-10" style={{ height: `${100 + n * (isMobile ? 24 : 40)}svh` }}>
+      <section id={id} data-theme="dark" ref={section} className="relative z-10" style={{ height: `${100 + n * (isMobile ? 24 : 40)}svh` }}>
         <div className="sticky top-0 h-[100svh] flex flex-col justify-center overflow-hidden py-3 sm:py-0">
           <div className="px-3.5 min-[360px]:px-5 sm:px-8 lg:px-14 mb-3 min-[360px]:mb-5 sm:mb-8 md:mb-12 flex items-end justify-between gap-3 sm:gap-6">
             <div>
-              <p className="font-mono text-[9px] min-[360px]:text-[11px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white/45 mb-2 sm:mb-4">03 — Selected Work</p>
-              <h2 className="text-2xl min-[360px]:text-3xl sm:text-6xl lg:text-7xl font-semibold tracking-tight">My projects</h2>
+              <p className="font-mono text-[9px] min-[360px]:text-[11px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white/45 mb-2 sm:mb-4">{label}</p>
+              <h2 className="text-2xl min-[360px]:text-3xl sm:text-6xl lg:text-7xl font-semibold tracking-tight">{title}</h2>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
               <div className="hidden md:block font-mono text-xs text-white/50 w-16 text-right">
@@ -150,7 +163,7 @@ export default function ProjectViewer() {
 
           <motion.div ref={track} style={{ x }} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerLeave={onUp}
             className="flex gap-4 sm:gap-6 md:gap-10 px-[8vw] sm:px-[20vw] lg:px-[27vw] w-max select-none cursor-grab active:cursor-grabbing touch-pan-y">
-            {projects.map((pr, i) => <Card key={pr.title} p={pr} i={i} n={n} progress={p} onOpen={openCard} />)}
+            {items.map((pr, i) => <Card key={pr.title} p={pr} i={i} n={n} progress={p} onOpen={openCard} />)}
           </motion.div>
 
           <div className="px-3.5 min-[360px]:px-5 sm:px-8 lg:px-14 mt-4 min-[360px]:mt-6 sm:mt-10 flex items-center gap-3 sm:gap-4">
@@ -163,24 +176,28 @@ export default function ProjectViewer() {
       </section>
 
       <AnimatePresence>
-        {open !== null && (
+        {open !== null && items[open] && (
           <motion.div className="dark-scope fixed inset-0 z-[80] flex items-end md:items-center justify-center p-2 min-[360px]:p-3 md:p-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setOpen(null)} />
             <motion.div initial={{ y: 80, opacity: 0, rotateX: 12 }} animate={{ y: 0, opacity: 1, rotateX: 0 }} exit={{ y: 60, opacity: 0 }}
               transition={{ duration: 0.8, ease }} style={{ transformPerspective: 1200 }}
               className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-t-2xl md:rounded-2xl border border-white/10 bg-[#111] grid md:grid-cols-[1.2fr_1fr] shadow-2xl">
               <div className="aspect-video md:aspect-auto md:min-h-[480px] overflow-hidden">
-                <motion.div className="w-full h-full" initial={{ scale: 1.25 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease }}><Cover p={projects[open]} i={open} /></motion.div>
+                <motion.div className="w-full h-full" initial={{ scale: 1.25 }} animate={{ scale: 1 }} transition={{ duration: 1.4, ease }}><Cover p={items[open]} i={open} /></motion.div>
               </div>
               <motion.div className="p-4 min-[360px]:p-6 md:p-10 flex flex-col" initial="h" animate="s" variants={{ s: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } } }}>
                 {[
-                  <p className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-white/45">{projects[open].tag} · {projects[open].year}</p>,
-                  <h3 className="text-xl min-[360px]:text-2xl sm:text-3xl md:text-5xl font-semibold tracking-tight mt-2 sm:mt-3 break-words">{projects[open].title}</h3>,
-                  <p className="text-xs min-[360px]:text-sm sm:text-base text-white/65 mt-3 sm:mt-5 leading-relaxed">{projects[open].description}</p>,
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-4 sm:mt-6">{projects[open].stack.map((s) => <span key={s} className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs border border-white/15">{s}</span>)}</div>,
-                  <div className="flex flex-wrap gap-2.5 sm:gap-3 pt-6 sm:pt-10">
-                    <a href={projects[open].live} target="_blank" rel="noreferrer" className="px-4 min-[360px]:px-6 py-2 min-[360px]:py-3 rounded-full bg-white text-black text-xs sm:text-sm font-medium hover:bg-white/80 transition-colors">Visit live ↗</a>
-                    {projects[open].code && <a href={projects[open].code} target="_blank" rel="noreferrer" className="px-4 min-[360px]:px-6 py-2 min-[360px]:py-3 rounded-full border border-white/20 text-xs sm:text-sm hover:bg-white/10 transition-colors">Source</a>}
+                  <p className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-white/45">{items[open].tag} · {items[open].year}</p>,
+                  <h3 className="text-xl min-[360px]:text-2xl sm:text-3xl md:text-5xl font-semibold tracking-tight mt-2 sm:mt-3 break-words">{items[open].title}</h3>,
+                  <p className="text-xs min-[360px]:text-sm sm:text-base text-white/65 mt-3 sm:mt-5 leading-relaxed">{items[open].description}</p>,
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-4 sm:mt-6">{items[open].stack.map((s) => <span key={s} className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs border border-white/15">{s}</span>)}</div>,
+                  <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-6 sm:pt-10">
+                    {items[open].live ? (
+                      <a href={items[open].live} target="_blank" rel="noreferrer" className="px-4 min-[360px]:px-6 py-2 min-[360px]:py-3 rounded-full bg-white text-black text-xs sm:text-sm font-medium hover:bg-white/80 transition-colors">Visit live ↗</a>
+                    ) : (
+                      <span className="px-4 min-[360px]:px-6 py-2 min-[360px]:py-3 rounded-full bg-white/10 text-white/70 text-xs sm:text-sm font-mono uppercase tracking-[0.15em] border border-white/15">Coming Soon · TAPMI</span>
+                    )}
+                    {items[open].code && <a href={items[open].code} target="_blank" rel="noreferrer" className="px-4 min-[360px]:px-6 py-2 min-[360px]:py-3 rounded-full border border-white/20 text-xs sm:text-sm hover:bg-white/10 transition-colors">Source</a>}
                   </div>,
                 ].map((el, k) => <motion.div key={k} variants={{ h: { opacity: 0, y: 20 }, s: { opacity: 1, y: 0, transition: { duration: 0.7, ease } } }} className={k === 4 ? 'mt-auto' : ''}>{el}</motion.div>)}
               </motion.div>

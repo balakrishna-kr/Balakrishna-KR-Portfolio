@@ -45,4 +45,40 @@ const projects = [
   },
 ]
 
+export const collegeProjects = [
+  {
+    title: 'project 1',
+    tag: '',
+    year: '2026',
+    description: 'pending',
+    stack: ['In Progress'],
+    image: null,
+    tint: '#1a2233',
+    live: '',
+    code: '',
+  },
+  {
+    title: 'project 2',
+    tag: '',
+    year: '2026',
+    description: 'pending',
+    stack: ['In Progress'],
+    image: null,
+    tint: '#281a2e',
+    live: '',
+    code: '',
+  },
+  {
+    title: 'project 3',
+    tag: '',
+    year: '2026',
+    description: 'pending',
+    stack: ['In Progress'],
+    image: null,
+    tint: '#1c2826',
+    live: '',
+    code: '',
+  },
+]
+
 export default projects

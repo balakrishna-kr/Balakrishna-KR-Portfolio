@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion'
 import Scene from './Scene.jsx'
 import ProjectViewer from './ProjectViewer.jsx'
+import projects, { collegeProjects } from './projects.js'
 
 const ease = [0.16, 1, 0.3, 1]
 const pad = 'px-3.5 min-[360px]:px-5 sm:px-8 lg:px-14'
@@ -64,10 +65,10 @@ function Word({ children, p, r, italic }) {
   return <motion.span style={{ opacity: o, y }} className={`mr-[0.25em] ${italic ? 'font-serif italic font-normal' : ''}`}>{children}</motion.span>
 }
 
-function Magnetic({ children, href, solid }) {
+function Magnetic({ children, href, solid, onClick }) {
   const x = useSpring(0, { stiffness: 200, damping: 14 }), y = useSpring(0, { stiffness: 200, damping: 14 })
   return (
-    <motion.a href={href} style={{ x, y }} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer"
+    <motion.a href={href} style={{ x, y }} target={href?.startsWith('http') ? '_blank' : undefined} rel="noreferrer" onClick={onClick}
       onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); x.set((e.clientX - r.left - r.width / 2) * 0.3); y.set((e.clientY - r.top - r.height / 2) * 0.3) }}
       onMouseLeave={() => { x.set(0); y.set(0) }}
       className={`group relative inline-flex items-center gap-2 sm:gap-3 overflow-hidden rounded-full px-4 min-[360px]:px-6 sm:px-8 py-2.5 min-[360px]:py-3.5 sm:py-4 text-[10px] min-[360px]:text-xs sm:text-sm uppercase tracking-[0.14em] min-[360px]:tracking-[0.18em] ${solid ? 'bg-white text-black' : 'border border-white/25 text-white'}`}>
@@ -98,7 +99,7 @@ function Arc({ style }) {
   const done = start + dur
   const ticks = Array.from({ length: 61 }, (_, i) => i / 60)
   return (
-    <motion.div style={style} className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[74svh] lg:h-[80svh] aspect-[1500/1283] hidden sm:block pointer-events-none">
+    <motion.div style={style} className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[74svh] lg:h-[80svh] aspect-[1500/1283] hidden min-[1101px]:block pointer-events-none">
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-full overflow-visible">
         {/* outer dashed orbit, slowly marching */}
         <motion.path d={arcD(r + 46)} fill="none" stroke="#141414" strokeOpacity="0.6" strokeWidth="3.2" strokeDasharray="5 13" strokeLinecap="round"
@@ -198,8 +199,8 @@ function Hero() {
           <div className="text-xs min-[360px]:text-[13px] sm:text-sm font-medium text-[#2b2b2b] leading-relaxed max-w-[28ch] min-[360px]:max-w-[30ch] lg:ml-auto">
             <Lines now delay={1.1}>BBA Honors student at</Lines>
             <Lines now delay={1.15}>T. A. Pai Management Institute, Bengaluru,</Lines>
-            <Lines now delay={1.2}>building robust projects with</Lines>
-            <Lines now delay={1.25}>React, Next.js and MongoDB, and more.</Lines>
+            <Lines now delay={1.2}>learning business management with a</Lines>
+            <Lines now delay={1.25}>strong parallel focus on modern technology</Lines>
           </div>
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.5, duration: 0.8, ease }}
             className="mt-3 sm:mt-5 flex flex-wrap lg:justify-end items-center gap-2 relative z-20 pointer-events-auto">
@@ -209,7 +210,7 @@ function Hero() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.7, duration: 1 }}
           className="col-span-2 lg:hidden mt-1 flex items-center gap-2 font-mono text-[9px] min-[360px]:text-[10px] uppercase tracking-[0.15em] min-[360px]:tracking-[0.25em] text-[#141414]/50 flex-wrap relative z-0">
           <span className="h-px w-6 sm:w-8 bg-[#141414]/30" />
-          Currently exploring <Rotator words={['AI', 'Web apps', 'Product', 'Business']} />
+          Currently exploring <Rotator words={['Management', 'Modern Tech', 'Business']} />
         </motion.div>
       </motion.div>
 
@@ -261,7 +262,7 @@ function Hero() {
 }
 
 const stack = [
-  { g: 'Frontend', items: ['React', 'Next.js', 'Tailwind CSS', 'Three.js'] },
+  { g: 'Frontend', items: ['React', 'Next.js', 'Tailwind CSS'] },
   { g: 'Backend & Data', items: ['Node / API Routes', 'MongoDB', 'Supabase', 'Python', 'MySQL'] },
   { g: 'Integrations', items: ['AI / LLM APIs', 'NextAuth · Google', 'Payment Gateways', '2D & 3D Maps'] },
   { g: 'Infrastructure', items: ['Vercel', 'Firebase', 'VPS', 'Nginx'] },
@@ -269,7 +270,7 @@ const stack = [
 
 const pillars = [
   ['Business', 'A BBA Honors foundation in markets, finance and management means every build starts with why it matters.'],
-  ['Technology', 'React, Next.js and MongoDB, with backend experience in Supabase, Python and MySQL, for feature-rich projects.'],
+  ['Technology', 'React and Next.js, with backend experience in Supabase, MongoDB, Python and MySQL, for feature-rich projects.'],
   ['Delivery', 'Production deployments across Vercel, Firebase and custom VPS environments configured with Nginx.'],
 ]
 
@@ -294,7 +295,7 @@ function Dock({ items }) {
         {items.map((id) => (
           <a key={id} href={`#${id}`} className={`relative px-2 min-[360px]:px-2.5 sm:px-4 h-7 min-[360px]:h-8 sm:h-9 shrink-0 grid place-items-center rounded-full font-mono text-[9px] min-[360px]:text-[10px] sm:text-[11px] uppercase tracking-[0.1em] min-[360px]:tracking-[0.15em] transition-colors duration-300 ${active === id ? 'text-black' : 'text-white/60 hover:text-white'}`}>
             {active === id && <motion.span layoutId="dock-pill" className="absolute inset-0 rounded-full bg-white" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
-            <span className="relative">{id}</span>
+            <span className="relative whitespace-nowrap">{id === 'college-projects' ? 'college work' : id}</span>
           </a>
         ))}
       </motion.nav>
@@ -314,33 +315,164 @@ function Pillar({ t, d, i }) {
   )
 }
 
+function Academics() {
+  const education = [
+    {
+      degree: 'Bachelor of Business Administration (BBA Honors)',
+      institution: 'T. A. Pai Management Institute (TAPMI)',
+      location: 'Bengaluru, Karnataka',
+      status: 'Currently Pursuing',
+      active: true,
+      description: 'Pursuing undergraduate management education at TAPMI Bengaluru.',
+      tags: ['BBA Honors', 'TAPMI Bengaluru']
+    },
+    {
+      degree: 'Pre-University Course (11th & 12th)',
+      institution: 'Don Bosco PU College',
+      location: 'Chitradurga, Karnataka',
+      status: 'Completed',
+      active: false,
+      description: 'Completed 11th and 12th grade education at Don Bosco PU College, fostering strong fundamentals in commerce, business studies, and quantitative skills.',
+      tags: ['11th & 12th Grade', 'Don Bosco PU College', 'Chitradurga',]
+    },
+    {
+      degree: 'High School (ICSE)',
+      institution: 'Don Bosco ICSE School',
+      location: 'Chitradurga, Karnataka',
+      status: 'Completed',
+      active: false,
+      description: 'Completed foundational schooling under the ICSE board, cultivating holistic academic learning with discipline.',
+      tags: ['High School (ICSE)', 'Don Bosco ICSE', 'Chitradurga']
+    }
+  ]
+
+  return (
+    <section id="academics" data-theme="dark" className={`relative z-10 ${pad} py-8 min-[360px]:py-10 sm:py-20 md:py-32 max-w-[1500px] mx-auto`}>
+      <Label n="02" t="Academics" />
+      <div className="mb-6 sm:mb-12">
+        <h2 className="text-3xl min-[360px]:text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05]">
+          <Lines>Academic</Lines><Lines delay={0.08} className="font-serif italic font-normal text-white/50">journey &amp; roots.</Lines>
+        </h2>
+        <p className="mt-3 text-xs sm:text-sm text-white/55 font-mono uppercase tracking-[0.16em]">
+          Educational Background
+        </p>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
+        {education.map((item, i) => (
+          <motion.div
+            key={item.institution}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.8, delay: i * 0.12, ease }}
+            className={`group relative rounded-2xl p-5 sm:p-7 md:p-8 flex flex-col justify-between border transition-all duration-500 ${
+              item.active
+                ? 'bg-gradient-to-b from-white/[0.08] to-white/[0.02] border-white/25 shadow-[0_10px_40px_rgba(0,0,0,0.5)]'
+                : 'bg-white/[0.03] border-white/10 hover:border-white/20 hover:bg-white/[0.05]'
+            }`}
+            data-hover
+          >
+            <div>
+              <div className="flex items-center justify-between font-mono text-[10px] sm:text-[11px] mb-4 sm:mb-6">
+                <span className="text-white/40">0{i + 1}</span>
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] uppercase tracking-[0.18em] ${
+                  item.active ? 'bg-white/15 text-white border border-white/25' : 'bg-white/10 text-white/60 border border-white/10'
+                }`}>
+                  {item.active && <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
+                  {item.status}
+                </span>
+              </div>
+
+              <span className="font-mono text-[10px] sm:text-xs text-white/45 uppercase tracking-[0.2em] block mb-1">
+                {item.period}
+              </span>
+              <h3 className="text-xl min-[360px]:text-2xl sm:text-2xl font-semibold tracking-tight text-white mb-2 leading-snug">
+                {item.institution}
+              </h3>
+              <p className="font-serif italic text-base sm:text-lg text-white/70 mb-3">
+                {item.degree}
+              </p>
+              <p className="text-xs sm:text-sm text-white/55 leading-relaxed mb-6">
+                {item.description}
+              </p>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 font-mono text-[9px] sm:text-[10px] text-white/40 mb-3 uppercase tracking-[0.15em]">
+                <span>📍 {item.location}</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {item.tags.map((tag) => (
+                  <span key={tag} className="px-2.5 py-0.5 rounded-full text-[10px] font-mono tracking-wider border border-white/10 text-white/50 bg-white/[0.02]">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function ContactForm({ open, onClose }) {
   const [sent, setSent] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const email = 'balakrishnakalvehalli@gmail.com'
+
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     const k = (e) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', k)
     return () => window.removeEventListener('keydown', k)
   }, [open])
+
   const submit = (e) => {
     e.preventDefault()
     const d = new FormData(e.currentTarget)
-    window.location.href = `mailto:balakrishnakalvehalli@gmail.com?subject=${encodeURIComponent(d.get('subject') || 'Hello from your portfolio')}&body=${encodeURIComponent(`${d.get('message')}\n\n— ${d.get('name')} (${d.get('email')})`)}`
+    const subject = d.get('subject') || 'Hello from your portfolio'
+    const body = `${d.get('message')}\n\n— ${d.get('name')} (${d.get('email')})`
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     setSent(true)
   }
+
+  const copy = () => {
+    navigator.clipboard?.writeText(email)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2500)
+  }
+
   const field = 'w-full bg-transparent border-b border-white/20 focus:border-white outline-none py-3 sm:py-4 text-base sm:text-xl placeholder:text-white/25 transition-colors'
   return (
     <motion.div initial={false} animate={{ clipPath: open ? 'inset(0% 0 0 0)' : 'inset(100% 0 0 0)' }} transition={{ duration: 0.9, ease }}
       className={`fixed inset-0 z-[60] bg-[#0b0b0b] overflow-y-auto ${open ? '' : 'pointer-events-none'}`}>
       <div className={`${pad} py-4 sm:py-6 flex justify-between items-center font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em]`}>
-        <span className="text-white/50">04 — Contact</span>
+        <span className="text-white/50">Contact</span>
         <button onClick={onClose} className="hover:text-white text-white/70 px-2 py-1 rounded border border-white/15">Close ✕</button>
       </div>
       <div className={`${pad} pt-6 sm:pt-10 md:pt-16 pb-16 sm:pb-20 max-w-[1500px] mx-auto grid lg:grid-cols-12 gap-8 sm:gap-14`}>
         <div className="lg:col-span-5">
           <h2 className="text-4xl min-[360px]:text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[0.95]">Let's<br /><span className="font-serif italic font-normal text-white/45">connect.</span></h2>
           <p className="mt-4 sm:mt-6 text-xs min-[360px]:text-sm sm:text-base text-white/55 max-w-sm">Have an idea, a project or just want to talk tech and business? Drop a message.</p>
+
+          <div className="mt-6 p-4 sm:p-5 rounded-xl bg-white/[0.04] border border-white/10 max-w-sm">
+            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/40 block mb-1">Direct Personal Email</span>
+            <a href={`mailto:${email}`} className="text-sm font-semibold text-white underline underline-offset-4 break-all block mb-3">
+              {email}
+            </a>
+            <div className="flex flex-wrap items-center gap-2">
+              <button type="button" onClick={copy} className="px-3 py-1 rounded-full border border-white/15 text-[10px] font-mono uppercase tracking-wider text-white/70 hover:bg-white hover:text-black transition-colors">
+                {copied ? '✓ Copied' : 'Copy Email'}
+              </button>
+              <a href={`https://mail.google.com/mail/?view=cm&fs=1&to=${email}`} target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full border border-white/15 text-[10px] font-mono uppercase tracking-wider text-white/70 hover:bg-white hover:text-black transition-colors">
+                Gmail Web ↗
+              </a>
+            </div>
+          </div>
         </div>
+
         <form onSubmit={submit} className="lg:col-span-7 flex flex-col gap-3 sm:gap-4">
           <div className="grid sm:grid-cols-2 gap-x-8 gap-y-3 sm:gap-y-4">
             <input required name="name" placeholder="Your name" className={field} />
@@ -353,7 +485,13 @@ function ContactForm({ open, onClose }) {
               <span className="absolute inset-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)] bg-neutral-300" />
               <span className="relative">Send message →</span>
             </button>
-            {sent && <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-white/50">Opening your mail app…</span>}
+            {sent && (
+              <div className="flex items-center gap-2 font-mono text-[10px] text-white/60">
+                <span>Opened mail client!</span>
+                <span>·</span>
+                <a href={`https://mail.google.com/mail/?view=cm&fs=1&to=${email}`} target="_blank" rel="noreferrer" className="underline hover:text-white">Or open in Gmail Web ↗</a>
+              </div>
+            )}
           </div>
         </form>
       </div>
@@ -378,7 +516,15 @@ export default function App() {
     f(); window.addEventListener('scroll', f, { passive: true })
     return () => window.removeEventListener('scroll', f)
   }, [])
-  const nav = ['about', 'stack', 'projects', 'contact']
+  const [copied, setCopied] = useState(false)
+  const email = 'balakrishnakalvehalli@gmail.com'
+  const copyEmail = () => {
+    navigator.clipboard?.writeText(email)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2500)
+  }
+
+  const nav = ['about', 'academics', 'stack', 'projects', 'college-projects', 'contact']
 
   return (
     <div className="grain relative text-[#e8e8e6]">
@@ -389,20 +535,20 @@ export default function App() {
 
       {/* NAV */}
       <motion.nav initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.8, ease }}
-        className={`absolute md:fixed top-0 inset-x-0 z-40 ${pad} py-4 sm:py-6 flex justify-between items-center mix-blend-difference`}>
+        className={`absolute min-[1101px]:fixed top-0 inset-x-0 z-40 ${pad} py-4 sm:py-6 flex justify-between items-center mix-blend-difference`}>
         <a href="#top" className="font-mono text-[10px] min-[360px]:text-xs uppercase tracking-[0.16em] min-[360px]:tracking-[0.25em] truncate max-w-[150px] min-[320px]:max-w-none">Balakrishna K R</a>
-        <div className="hidden md:flex gap-10 font-mono text-xs uppercase tracking-[0.2em]">
+        <div className="hidden min-[1101px]:flex gap-8 lg:gap-10 font-mono text-xs uppercase tracking-[0.2em]">
           {nav.map((l) => (
             <a key={l} href={`#${l}`} className="group relative overflow-hidden h-4 block">
-              <span className="block group-hover:-translate-y-full transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)]">{l}</span>
-              <span className="block absolute top-full group-hover:-translate-y-full transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)]">{l}</span>
+              <span className="block group-hover:-translate-y-full transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)]">{l.replace('-', ' ')}</span>
+              <span className="block absolute top-full group-hover:-translate-y-full transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)]">{l.replace('-', ' ')}</span>
             </a>
           ))}
         </div>
-        <button className="md:hidden font-mono text-[10px] min-[360px]:text-xs uppercase tracking-[0.18em] px-2.5 py-1 rounded border border-white/20 active:bg-white/20" onClick={() => setMenu(!menu)}>{menu ? 'Close' : 'Menu'}</button>
+        <button className="min-[1101px]:hidden font-mono text-[10px] min-[360px]:text-xs uppercase tracking-[0.18em] px-2.5 py-1 rounded border border-white/20 active:bg-white/20" onClick={() => setMenu(!menu)}>{menu ? 'Close' : 'Menu'}</button>
       </motion.nav>
       <motion.div initial={false} animate={{ clipPath: menu ? 'inset(0 0 0% 0)' : 'inset(0 0 100% 0)' }} transition={{ duration: 0.8, ease }}
-        className={`fixed inset-0 z-50 bg-[#0d0d0d] md:hidden flex flex-col justify-between ${pad} pt-6 pb-12`}>
+        className={`fixed inset-0 z-50 bg-[#0d0d0d] min-[1101px]:hidden flex flex-col justify-between ${pad} pt-6 pb-12`}>
         <div className="flex justify-between items-center">
           <span className="font-mono text-xs uppercase tracking-[0.25em] text-white/50">Navigation</span>
           <button className="font-mono text-xs uppercase tracking-[0.2em] text-white px-3 py-1.5 rounded-full border border-white/20" onClick={() => setMenu(false)}>Close ✕</button>
@@ -410,7 +556,7 @@ export default function App() {
         <div className="flex flex-col gap-3 my-auto">
           {nav.map((l, i) => (
             <a key={l} href={`#${l}`} onClick={() => setMenu(false)} className="overflow-hidden block py-1">
-              <motion.span className="block text-4xl min-[360px]:text-5xl font-semibold capitalize tracking-tight" animate={{ y: menu ? 0 : '100%' }} transition={{ duration: 0.8, delay: menu ? 0.25 + i * 0.06 : 0, ease }}>{l}</motion.span>
+              <motion.span className="block text-3xl min-[360px]:text-4xl sm:text-5xl font-semibold capitalize tracking-tight" animate={{ y: menu ? 0 : '100%' }} transition={{ duration: 0.8, delay: menu ? 0.25 + i * 0.06 : 0, ease }}>{l.replace('-', ' ')}</motion.span>
             </a>
           ))}
         </div>
@@ -423,14 +569,17 @@ export default function App() {
       {/* ABOUT — scroll-lit manifesto */}
       <section id="about" data-theme="dark" className={`relative z-10 ${pad} pt-8 min-[360px]:pt-10 sm:pt-28 md:pt-44 pb-8 min-[360px]:pb-10 sm:pb-20 max-w-[1500px] mx-auto`}>
         <Label n="01" t="About" />
-        <ScrollText text="I'm a BBA Honors student at T. A. Pai Management Institute, Bengaluru with a strong parallel focus on _modern _technology. I bring _business and _management learning together with _tech — taking requirements and turning them into _robust projects." />
+        <ScrollText text="I'm a BBA Honors student at T. A. Pai Management Institute, Bengaluru with a strong parallel focus on _modern _technology. I bring _business and _management learning together with _tech — taking requirements and turning them into _practical projects." />
         <div className="grid md:grid-cols-3 gap-5 sm:gap-10 md:gap-8 mt-6 min-[360px]:mt-8 sm:mt-24 md:mt-36">
           {pillars.map(([t, d], i) => <Pillar key={t} t={t} d={d} i={i} />)}
         </div>
       </section>
 
-      {/* CAPABILITIES */}
-      <section data-theme="light" className={`light relative z-10 ${pad} py-8 min-[360px]:py-10 sm:py-20 md:py-32 max-w-[1500px] mx-auto`}>
+      {/* ACADEMICS — High School, PU College, TAPMI BBA */}
+      <Academics />
+
+      {/* CAPABILITIES — Kept dark so transition is only from hero to about */}
+      <section data-theme="dark" className={`relative z-10 ${pad} py-8 min-[360px]:py-10 sm:py-20 md:py-32 max-w-[1500px] mx-auto`}>
         <div className="mb-6 sm:mb-10 lg:mb-12">
           <h2 className="text-3xl min-[360px]:text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05]">
             <Lines>Complex</Lines><Lines delay={0.08}>functionality,</Lines><Lines delay={0.16} className="font-serif italic font-normal text-white/50">built in.</Lines>
@@ -463,7 +612,7 @@ export default function App() {
 
       {/* STACK */}
       <section id="stack" data-theme="dark" className={`relative z-10 ${pad} py-8 min-[360px]:py-10 sm:py-20 md:py-32 max-w-[1500px] mx-auto`}>
-        <Label n="02" t="Stack" />
+        <Label n="03" t="Stack" />
         <div className="border-t border-white/15">
           {stack.map((s, i) => (
             <motion.div key={s.g} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-40px' }} transition={{ duration: 0.9, delay: i * 0.06, ease }}
@@ -477,11 +626,15 @@ export default function App() {
         </div>
       </section>
 
-      <ProjectViewer />
+      {/* REGULAR PROJECTS */}
+      <ProjectViewer id="projects" label="04 — Selected Work" title="My projects" items={projects} />
+
+      {/* COLLEGE PROJECTS */}
+      <ProjectViewer id="college-projects" label="05 — Academic Projects" title="College projects" items={collegeProjects} />
 
       {/* CONTACT */}
       <section id="contact" data-theme="dark" className={`relative z-10 ${pad} pt-8 min-[360px]:pt-10 sm:pt-24 md:pt-32 pb-12 sm:pb-16 max-w-[1500px] mx-auto`}>
-        <Label n="04" t="Contact" />
+        <Label n="06" t="Contact" />
         <h2 className="text-4xl min-[360px]:text-5xl sm:text-[13vw] lg:text-[11vw] 2xl:text-[13rem] font-semibold tracking-[-0.04em] leading-[0.92] sm:leading-[0.88]">
           <Lines>Contact</Lines>
         </h2>
@@ -492,9 +645,28 @@ export default function App() {
               <span className="relative">Open contact form<span className="absolute left-0 -bottom-1 h-px w-full bg-white origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)]" /></span>
               <span className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 grid place-items-center rounded-full border border-white/25 group-hover:bg-white group-hover:text-black group-hover:-rotate-45 transition-all duration-500 text-sm sm:text-base">→</span>
             </button>
+
+            {/* Direct Email Card */}
+            <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-white/[0.04] border border-white/15 max-w-md">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-white/45">Personal Email</span>
+                {copied && <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-emerald-400">✓ Copied!</span>}
+              </div>
+              <a href={`mailto:${email}`} className="text-base min-[360px]:text-lg sm:text-xl font-semibold text-white hover:underline underline-offset-4 break-all block">
+                {email}
+              </a>
+              <div className="mt-3.5 flex flex-wrap items-center gap-2">
+                <a href={`https://mail.google.com/mail/?view=cm&fs=1&to=${email}`} target="_blank" rel="noreferrer" className="px-3.5 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-wider text-white hover:bg-white hover:text-black transition-colors inline-flex items-center gap-1">
+                  <span>Gmail Web ↗</span>
+                </a>
+                <button type="button" onClick={copyEmail} className="px-3 py-1.5 rounded-full border border-white/20 text-xs font-mono uppercase tracking-wider text-white/70 hover:text-white hover:border-white transition-colors">
+                  {copied ? '✓ Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2 sm:gap-3">
-            <Magnetic href="mailto:balakrishnakalvehalli@gmail.com" solid>Email me</Magnetic>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <Magnetic href={`https://mail.google.com/mail/?view=cm&fs=1&to=${email}`} solid onClick={copyEmail}>Email me</Magnetic>
             <Magnetic href="https://www.linkedin.com/in/balakrishna-k-r-a9b2ba284/">LinkedIn</Magnetic>
             <Magnetic href="https://github.com/balakrishna-kr">GitHub</Magnetic>
           </div>
