@@ -265,6 +265,7 @@ const stack = [
   { g: 'Frontend', items: ['React', 'Next.js', 'Tailwind CSS'] },
   { g: 'Backend & Data', items: ['Node / API Routes', 'MongoDB', 'Supabase', 'Python', 'MySQL'] },
   { g: 'Integrations', items: ['AI / LLM APIs', 'NextAuth · Google', 'Payment Gateways', '2D & 3D Maps'] },
+  { g: 'Design & Visuals', items: ['Figma (Basic UI/UX)', 'Canva (Assets & Layouts)'] },
   { g: 'Infrastructure', items: ['Vercel', 'Firebase', 'VPS', 'Nginx'] },
 ]
 
@@ -366,10 +367,10 @@ function Academics() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
             transition={{ duration: 0.8, delay: i * 0.12, ease }}
-            className={`group relative rounded-2xl p-5 sm:p-7 md:p-8 flex flex-col justify-between border transition-all duration-500 ${
+            className={`group relative rounded-2xl p-5 sm:p-7 md:p-8 flex flex-col justify-between border backdrop-blur-xl transition-all duration-500 ${
               item.active
-                ? 'bg-gradient-to-b from-white/[0.08] to-white/[0.02] border-white/25 shadow-[0_10px_40px_rgba(0,0,0,0.5)]'
-                : 'bg-white/[0.03] border-white/10 hover:border-white/20 hover:bg-white/[0.05]'
+                ? 'bg-white/[0.06] border-white/25 shadow-[0_20px_50px_rgba(0,0,0,0.6)]'
+                : 'bg-white/[0.03] border-white/10 hover:border-white/25 hover:bg-white/[0.06] shadow-[0_10px_30px_rgba(0,0,0,0.3)]'
             }`}
             data-hover
           >
@@ -507,14 +508,29 @@ export default function App() {
   const [form, setForm] = useState(false)
   const [light, setLight] = useState(true)
   useEffect(() => {
-    // background follows whichever section sits at the middle of the viewport
+    // Top of page is always light (hero). When scrolling down, check active visible section.
     const f = () => {
-      let t = 'light'
-      document.querySelectorAll('[data-theme]').forEach((el) => { if (el.getBoundingClientRect().top < window.innerHeight * 0.5) t = el.dataset.theme })
+      if (window.scrollY < window.innerHeight * 0.4) {
+        setLight(true)
+        return
+      }
+      let t = 'dark'
+      document.querySelectorAll('[data-theme]').forEach((el) => {
+        const rect = el.getBoundingClientRect()
+        // If element is visible and occupies the middle of the viewport
+        if (rect.top <= window.innerHeight * 0.5 && rect.bottom >= window.innerHeight * 0.3) {
+          t = el.dataset.theme
+        }
+      })
       setLight(t === 'light')
     }
-    f(); window.addEventListener('scroll', f, { passive: true })
-    return () => window.removeEventListener('scroll', f)
+    f()
+    window.addEventListener('scroll', f, { passive: true })
+    window.addEventListener('resize', f, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', f)
+      window.removeEventListener('resize', f)
+    }
   }, [])
   const [copied, setCopied] = useState(false)
   const email = 'balakrishnakalvehalli@gmail.com'
@@ -585,24 +601,41 @@ export default function App() {
             <Lines>Complex</Lines><Lines delay={0.08}>functionality,</Lines><Lines delay={0.16} className="font-serif italic font-normal text-white/50">built in.</Lines>
           </h2>
         </div>
-        <div className="grid lg:grid-cols-12 gap-6 sm:gap-10 lg:items-center">
-          <div className="lg:col-span-5 flex items-center">
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.2, ease }}
-              className="p-4 min-[360px]:p-5 sm:p-6 rounded-2xl bg-white/[0.04] sm:bg-white/[0.05] border border-white/15 border-l-4 border-l-white shadow-[0_8px_30px_rgba(20,20,20,0.04)] w-full max-w-xl">
-              <p className="text-sm min-[360px]:text-base sm:text-xl md:text-2xl lg:text-[1.38rem] xl:text-[1.55rem] text-white/85 leading-snug sm:leading-[1.36] tracking-tight">
-                Features that make projects which are <span className="text-white font-semibold underline decoration-white/30 underline-offset-[5px] decoration-2">smart, connected, secure</span> and <span className="font-serif italic font-normal text-white">ready to use.</span>
+        <div className="grid lg:grid-cols-12 gap-8 sm:gap-12 lg:items-center">
+          {/* LEFT: Desktop gets large scroll-lit manifesto text like About section (no box); mobile keeps a lowkey clean intro */}
+          <div className="lg:col-span-5">
+            {/* Desktop / Laptop: Large typography with words lighting up as you scroll */}
+            <div className="hidden lg:block">
+              <ScrollText text="Features that make projects which are _smart, _connected, _secure and _ready _to _use." />
+            </div>
+
+            {/* Mobile / Small devices: lowkey clean text standing neatly above the feature boxes */}
+            <div className="block lg:hidden">
+              <p className="text-base min-[360px]:text-lg sm:text-xl text-white/85 leading-snug tracking-tight">
+                Features that make projects which are <span className="text-white font-medium">smart, connected, secure</span> and <span className="font-serif italic font-normal text-white">ready to use.</span>
               </p>
-            </motion.div>
+            </div>
           </div>
-          <div className="lg:col-span-7 grid sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded-xl overflow-hidden">
-            {[['AI integration', 'Intelligent features, from LLM assistants to automation.'], ['2D & 3D maps', 'Interactive geospatial rendering that turns data into insight.'],
-              ['Payment gateways', 'Secure checkout flows that let products earn.'], ['Google auth', 'Sign-in and sessions via NextAuth, done properly.']].map(([t, d], i) => (
-              <motion.div key={t} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: i * 0.1 }}
-                className="group bg-black/60 backdrop-blur p-4 min-[360px]:p-5 sm:p-7 md:p-9 min-h-[140px] sm:min-h-[200px] flex flex-col justify-between hover:bg-white/[0.06] transition-colors duration-500" data-hover>
-                <div className="flex justify-between font-mono text-[10px] sm:text-[11px] text-white/40"><span>0{i + 1}</span><span className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">→</span></div>
+
+          {/* RIGHT: Feature cards with frosted glassmorphism */}
+          <div className="lg:col-span-7 grid sm:grid-cols-2 gap-px bg-white/10 border border-white/10 rounded-xl overflow-hidden backdrop-blur-md">
+            {[
+              ['AI integration', 'Intelligent features, from LLM assistants to automation.'],
+              ['2D & 3D maps', 'Interactive geospatial rendering that turns data into insight.'],
+              ['Payment gateways', 'Secure checkout flows that let products earn.'],
+              ['Google auth', 'Sign-in and sessions via NextAuth, done properly.'],
+              ['UI/UX Design', 'Basic design foundations in Figma and Canva for clean interfaces.'],
+              ['Production Deploy', 'Zero-downtime deployments on Vercel, Firebase & Nginx VPS.'],
+            ].map(([t, d], i) => (
+              <motion.div key={t} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: i * 0.08 }}
+                className="group bg-black/60 backdrop-blur-xl p-4 min-[360px]:p-5 sm:p-7 md:p-8 min-h-[140px] sm:min-h-[180px] flex flex-col justify-between hover:bg-white/[0.08] transition-colors duration-500" data-hover>
+                <div className="flex justify-between font-mono text-[10px] sm:text-[11px] text-white/40">
+                  <span>0{i + 1}</span>
+                  <span className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">→</span>
+                </div>
                 <div className="mt-3 sm:mt-4">
-                  <h3 className="text-base min-[360px]:text-lg sm:text-2xl font-semibold">{t}</h3>
-                  <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-white/60">{d}</p>
+                  <h3 className="text-base min-[360px]:text-lg sm:text-2xl font-semibold text-white">{t}</h3>
+                  <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-white/60 leading-relaxed">{d}</p>
                 </div>
               </motion.div>
             ))}
@@ -641,13 +674,9 @@ export default function App() {
         <div className="mt-6 min-[360px]:mt-8 sm:mt-14 flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-10">
           <div>
             <p className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white/40">Let's connect ↘</p>
-            <button onClick={() => setForm(true)} className="group mt-3 sm:mt-6 inline-flex items-center gap-3 sm:gap-4 text-xl min-[360px]:text-2xl sm:text-3xl font-semibold tracking-tight text-left">
-              <span className="relative">Open contact form<span className="absolute left-0 -bottom-1 h-px w-full bg-white origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)]" /></span>
-              <span className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 grid place-items-center rounded-full border border-white/25 group-hover:bg-white group-hover:text-black group-hover:-rotate-45 transition-all duration-500 text-sm sm:text-base">→</span>
-            </button>
 
             {/* Direct Email Card */}
-            <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-white/[0.04] border border-white/15 max-w-md">
+            <div className="mt-4 sm:mt-6 p-4 sm:p-5 rounded-2xl bg-white/[0.04] border border-white/15 max-w-md backdrop-blur-xl">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-white/45">Personal Email</span>
                 {copied && <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-emerald-400">✓ Copied!</span>}
@@ -676,7 +705,6 @@ export default function App() {
           <a href="#top" className="hover:text-white transition-colors">Back to top ↑</a>
         </footer>
       </section>
-      <ContactForm open={form} onClose={() => setForm(false)} />
     </div>
   )
 }

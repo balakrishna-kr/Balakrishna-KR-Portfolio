@@ -74,15 +74,18 @@ function Card({ p, i, progress, n, onOpen }) {
 }
 
 export default function ProjectViewer({ id = 'projects', label = '05 — Selected Work', title = 'My projects', items = projects }) {
-  const section = useRef(), track = useRef()
+  const section = useRef(), track = useRef(), mobileTrack = useRef()
   const [open, setOpen] = useState(null)
   const [dist, setDist] = useState(0)
   const [active, setActive] = useState(0)
-  const [isMobile, setIsMobile] = useState(false)
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
   const n = items.length
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640)
+    const check = () => {
+      // Touch/tablet devices: screens <= 1024px or primary coarse pointer
+      setIsTouchDevice(window.innerWidth <= 1024 || window.matchMedia('(pointer: coarse)').matches)
+    }
     check()
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
@@ -101,19 +104,33 @@ export default function ProjectViewer({ id = 'projects', label = '05 — Selecte
     }
   }, [items])
 
+  // Desktop vertical-to-horizontal spring scroll
   const { scrollYProgress } = useScroll({ target: section, offset: ['start start', 'end end'] })
   const p = useSpring(scrollYProgress, { stiffness: 90, damping: 24, mass: 0.4 })
   const x = useTransform(p, [0, 1], [0, -dist])
-  useMotionValueEvent(scrollYProgress, 'change', (v) => setActive(Math.min(n - 1, Math.round(v * (n - 1)))))
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    if (!isTouchDevice) {
+      setActive(Math.min(n - 1, Math.round(v * (n - 1))))
+    }
+  })
 
-  // Jump the page so the chosen project centres (user can also just scroll / drag)
+  // Desktop navigation helper
   const goTo = (i) => {
+    if (isTouchDevice && mobileTrack.current) {
+      const cards = mobileTrack.current.children
+      if (cards[i]) {
+        cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+      }
+      setActive(i)
+      return
+    }
     const el = section.current
     if (!el) return
     const top = el.offsetTop + (el.offsetHeight - window.innerHeight) * (i / Math.max(1, n - 1))
     window.scrollTo({ top, behavior: 'smooth' })
   }
 
+  // Keyboard navigation
   useEffect(() => {
     const k = (e) => {
       if (e.key === 'Escape') setOpen(null)
@@ -124,53 +141,114 @@ export default function ProjectViewer({ id = 'projects', label = '05 — Selecte
     }
     window.addEventListener('keydown', k)
     return () => window.removeEventListener('keydown', k)
-  }, [active, open, n])
+  }, [active, open, n, isTouchDevice])
 
-  // Dragging the track converts into page scroll
+  // Desktop dragging
   const drag = useRef(null)
-  const onDown = (e) => { drag.current = { x: e.clientX, y: window.scrollY, moved: false } }
-  const onMove = (e) => {
-    if (!drag.current || !section.current) return
-    const dx = e.clientX - drag.current.x
-    if (Math.abs(dx) > 4) drag.current.moved = true
-    const ratio = (section.current.offsetHeight - window.innerHeight) / Math.max(1, dist)
-    window.scrollTo({ top: drag.current.y - dx * ratio })
+  const onPointerDown = (e) => {
+    drag.current = { startX: e.clientX, scrollY: window.scrollY, moved: false }
   }
-  const onUp = () => { setTimeout(() => (drag.current = null), 0) }
-  const openCard = (i) => { if (!drag.current?.moved) setOpen(i) }
+  const onPointerMove = (e) => {
+    if (!drag.current || !section.current) return
+    const dx = e.clientX - drag.current.startX
+    if (Math.abs(dx) > 4) drag.current.moved = true
+    const scrollRange = section.current.offsetHeight - window.innerHeight
+    const ratio = scrollRange / Math.max(1, dist || 1)
+    window.scrollTo({ top: drag.current.scrollY - dx * ratio })
+  }
+  const onPointerUp = () => {
+    setTimeout(() => { drag.current = null }, 50)
+  }
+
+  const openCard = (i) => {
+    if (!drag.current?.moved) setOpen(i)
+  }
 
   return (
     <>
-      <section id={id} data-theme="dark" ref={section} className="relative z-10" style={{ height: `${100 + n * (isMobile ? 24 : 40)}svh` }}>
-        <div className="sticky top-0 h-[100svh] flex flex-col justify-center overflow-hidden py-3 sm:py-0">
-          <div className="px-3.5 min-[360px]:px-5 sm:px-8 lg:px-14 mb-3 min-[360px]:mb-5 sm:mb-8 md:mb-12 flex items-end justify-between gap-3 sm:gap-6">
+      {/* MOBILE & TABLET LAYOUT: Normal natural vertical page scrolling; horizontal swipe only for the project cards */}
+      <section id={id} data-theme="dark" className="block lg:hidden relative z-10 py-10 min-[360px]:py-14 sm:py-20 max-w-[1500px] mx-auto">
+        <div className="px-3.5 min-[360px]:px-5 sm:px-8 mb-4 sm:mb-6 flex items-end justify-between gap-4">
+          <div>
+            <p className="font-mono text-[9px] min-[360px]:text-[11px] uppercase tracking-[0.25em] text-white/45 mb-1.5 sm:mb-3">{label}</p>
+            <h2 className="text-2xl min-[360px]:text-3xl sm:text-5xl font-semibold tracking-tight">{title}</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            {[[-1, '←'], [1, '→']].map(([d, l]) => (
+              <button key={d} onClick={() => goTo(Math.max(0, Math.min(n - 1, active + d)))} aria-label={d < 0 ? 'Previous' : 'Next'}
+                className="w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 sm:w-10 sm:h-10 rounded-full border border-white/20 text-xs sm:text-sm hover:bg-white hover:text-black transition-colors flex items-center justify-center">{l}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Horizontal scroll container with snap: native touch scroll allows vertical page scroll, swiping sideways scrolls slides */}
+        <div ref={mobileTrack}
+          onScroll={(e) => {
+            const el = e.currentTarget
+            const idx = Math.round(el.scrollLeft / (el.offsetWidth * 0.82))
+            setActive(Math.max(0, Math.min(n - 1, idx)))
+          }}
+          className="flex gap-4 px-3.5 min-[360px]:px-5 sm:px-8 overflow-x-auto overflow-y-visible snap-x snap-mandatory scrollbar-none py-2"
+          style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}>
+          {items.map((pr, i) => (
+            <article key={pr.title} onClick={() => setOpen(i)}
+              className="snap-center shrink-0 w-[84vw] sm:w-[68vw] max-w-[560px] cursor-pointer">
+              <div className="relative aspect-[16/10] rounded-xl overflow-hidden border border-white/10 bg-[#121214]">
+                <Cover p={pr} i={i} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent via-40% to-transparent pointer-events-none" />
+                <div className="absolute top-2.5 left-3 right-3 flex justify-between font-mono text-[9px] uppercase tracking-[0.2em] text-white/70">
+                  <span>0{i + 1} / 0{n}</span><span>{pr.year}</span>
+                </div>
+                <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-white text-black grid place-items-center text-xs">↗</div>
+              </div>
+              <div className="mt-3 flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-base min-[360px]:text-lg sm:text-2xl font-semibold tracking-tight truncate">{pr.title}</h3>
+                  <p className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-white/45">{pr.tag || 'Project'}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="px-3.5 min-[360px]:px-5 sm:px-8 mt-3 flex items-center justify-between text-white/40 font-mono text-[9px] uppercase tracking-wider">
+          <span>Swipe sideways ↔</span>
+          <span>0{active + 1} / 0{n}</span>
+        </div>
+      </section>
+
+      {/* LAPTOP / DESKTOP LAYOUT: Existing signature pinned horizontal parallax scroll */}
+      <section id={id} data-theme="dark" ref={section} className="hidden lg:block relative z-10" style={{ height: `${100 + n * 40}svh` }}>
+        <div className="sticky top-0 h-[100svh] flex flex-col justify-center overflow-hidden py-0">
+          <div className="px-8 lg:px-14 mb-8 md:mb-12 flex items-end justify-between gap-6">
             <div>
-              <p className="font-mono text-[9px] min-[360px]:text-[11px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white/45 mb-2 sm:mb-4">{label}</p>
-              <h2 className="text-2xl min-[360px]:text-3xl sm:text-6xl lg:text-7xl font-semibold tracking-tight">{title}</h2>
+              <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/45 mb-4">{label}</p>
+              <h2 className="text-6xl lg:text-7xl font-semibold tracking-tight">{title}</h2>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4">
-              <div className="hidden md:block font-mono text-xs text-white/50 w-16 text-right">
+            <div className="flex items-center gap-4">
+              <div className="font-mono text-xs text-white/50 w-16 text-right">
                 <AnimatePresence mode="wait">
                   <motion.span key={active} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -12, opacity: 0 }} className="inline-block text-white">0{active + 1}</motion.span>
                 </AnimatePresence> / 0{n}
               </div>
               {[[-1, '←'], [1, '→']].map(([d, l]) => (
                 <button key={d} onClick={() => goTo(Math.max(0, Math.min(n - 1, active + d)))} aria-label={d < 0 ? 'Previous' : 'Next'}
-                  className="w-8 h-8 min-[360px]:w-10 min-[360px]:h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-full border border-white/20 text-xs sm:text-base hover:bg-white hover:text-black transition-colors flex items-center justify-center">{l}</button>
+                  className="w-12 h-12 rounded-full border border-white/20 text-base hover:bg-white hover:text-black transition-colors flex items-center justify-center">{l}</button>
               ))}
             </div>
           </div>
 
-          <motion.div ref={track} style={{ x }} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerLeave={onUp}
-            className="flex gap-4 sm:gap-6 md:gap-10 px-[8vw] sm:px-[20vw] lg:px-[27vw] w-max select-none cursor-grab active:cursor-grabbing touch-pan-y">
+          <motion.div ref={track} style={{ x }}
+            onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp}
+            className="flex gap-10 px-[27vw] w-max select-none cursor-grab active:cursor-grabbing">
             {items.map((pr, i) => <Card key={pr.title} p={pr} i={i} n={n} progress={p} onOpen={openCard} />)}
           </motion.div>
 
-          <div className="px-3.5 min-[360px]:px-5 sm:px-8 lg:px-14 mt-4 min-[360px]:mt-6 sm:mt-10 flex items-center gap-3 sm:gap-4">
+          <div className="px-8 lg:px-14 mt-10 flex items-center gap-4">
             <div className="relative h-px flex-1 bg-white/15 overflow-hidden">
               <motion.div style={{ scaleX: p }} className="absolute inset-0 bg-white origin-left" />
             </div>
-            <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-white/40 hidden sm:block">Scroll · Drag · ← →</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/40">Scroll · Drag · ← →</span>
           </div>
         </div>
       </section>
