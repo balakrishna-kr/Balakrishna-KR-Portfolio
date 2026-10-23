@@ -163,7 +163,14 @@ function Hero() {
   const rot = useSpring(useTransform(mx, [-1, 1], [-4, 4]), { stiffness: 50, damping: 20 })
   const nx = useSpring(useTransform(mx, [-1, 1], [10, -10]), { stiffness: 50, damping: 20 })
   useEffect(() => {
-    const m = (e) => { mx.set((e.clientX / window.innerWidth) * 2 - 1); my.set((e.clientY / window.innerHeight) * 2 - 1) }
+    // Only track cursor on laptop / desktop dimensions (non-touch devices with fine cursor)
+    const isLaptop = window.innerWidth >= 1024 && window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    if (!isLaptop) return
+
+    const m = (e) => {
+      mx.set((e.clientX / window.innerWidth) * 2 - 1)
+      my.set((e.clientY / window.innerHeight) * 2 - 1)
+    }
     window.addEventListener('mousemove', m)
     return () => window.removeEventListener('mousemove', m)
   }, [])
@@ -282,14 +289,17 @@ function Dock({ items }) {
     const f = () => {
       setShow(window.scrollY > window.innerHeight * 0.6)
       let cur = ''
-      items.forEach((id) => { const el = document.getElementById(id); if (el && el.getBoundingClientRect().top < window.innerHeight * 0.5) cur = id })
+      items.forEach((id) => {
+        const el = document.getElementById(id) || document.getElementById(`${id}-mobile`)
+        if (el && el.getBoundingClientRect().top < window.innerHeight * 0.5) cur = id
+      })
       setActive(cur)
     }
     f(); window.addEventListener('scroll', f, { passive: true })
     return () => window.removeEventListener('scroll', f)
   }, [items])
   return (
-    <div className={`fixed bottom-3 sm:bottom-6 inset-x-0 z-40 flex justify-center px-2 ${show ? '' : 'pointer-events-none'}`}>
+    <div className={`fixed bottom-3 sm:bottom-6 inset-x-0 z-40 hidden md:flex justify-center px-2 ${show ? '' : 'pointer-events-none'}`}>
       <motion.nav initial={false} animate={{ y: show ? 0 : 100, opacity: show ? 1 : 0 }} transition={{ duration: 0.7, ease }}
         className="flex items-center gap-0.5 min-[360px]:gap-1 rounded-full border border-white/15 bg-[#0d0d0d]/85 backdrop-blur-xl p-1 sm:p-1.5 shadow-[0_10px_40px_rgba(0,0,0,0.6)] max-w-full overflow-x-auto">
         <a href="#top" aria-label="Back to top" className="w-7 h-7 min-[360px]:w-8 min-[360px]:h-8 sm:w-9 sm:h-9 shrink-0 grid place-items-center rounded-full font-mono text-[9px] min-[360px]:text-[10px] text-white/60 hover:text-white">↑</a>
@@ -510,15 +520,16 @@ export default function App() {
   useEffect(() => {
     // Top of page is always light (hero). When scrolling down, check active visible section.
     const f = () => {
-      if (window.scrollY < window.innerHeight * 0.4) {
+      const topBoundary = window.innerHeight * (mobile ? 0.35 : 0.45)
+      if (window.scrollY < topBoundary) {
         setLight(true)
         return
       }
       let t = 'dark'
+      const checkY = window.innerHeight * 0.4
       document.querySelectorAll('[data-theme]').forEach((el) => {
         const rect = el.getBoundingClientRect()
-        // If element is visible and occupies the middle of the viewport
-        if (rect.top <= window.innerHeight * 0.5 && rect.bottom >= window.innerHeight * 0.3) {
+        if (rect.top <= checkY && rect.bottom >= checkY) {
           t = el.dataset.theme
         }
       })
@@ -531,7 +542,7 @@ export default function App() {
       window.removeEventListener('scroll', f)
       window.removeEventListener('resize', f)
     }
-  }, [])
+  }, [mobile])
   const [copied, setCopied] = useState(false)
   const email = 'balakrishnakalvehalli@gmail.com'
   const copyEmail = () => {
@@ -545,7 +556,10 @@ export default function App() {
   return (
     <div className="grain relative text-[#e8e8e6]">
       <Cursor />
-      <div className="fixed inset-0 z-0 transition-colors duration-700" style={{ backgroundColor: light ? '#ece8e1' : '#0a0a0a' }} />
+      <div
+        className="fixed inset-0 z-0 transition-colors duration-500 ease-out will-change-[background-color]"
+        style={{ backgroundColor: light ? '#ece8e1' : '#0a0a0a' }}
+      />
       <Scene scroll={smooth} mobile={mobile} light={light} />
       <motion.div style={{ scaleX: smooth }} className="fixed top-0 left-0 right-0 h-px bg-white origin-left z-50" />
 
@@ -571,7 +585,14 @@ export default function App() {
         </div>
         <div className="flex flex-col gap-3 my-auto">
           {nav.map((l, i) => (
-            <a key={l} href={`#${l}`} onClick={() => setMenu(false)} className="overflow-hidden block py-1">
+            <a key={l} href={`#${l}`} onClick={(e) => {
+              setMenu(false)
+              const mobTarget = document.getElementById(`${l}-mobile`)
+              if (mobTarget) {
+                e.preventDefault()
+                mobTarget.scrollIntoView({ behavior: 'smooth' })
+              }
+            }} className="overflow-hidden block py-1">
               <motion.span className="block text-3xl min-[360px]:text-4xl sm:text-5xl font-semibold capitalize tracking-tight" animate={{ y: menu ? 0 : '100%' }} transition={{ duration: 0.8, delay: menu ? 0.25 + i * 0.06 : 0, ease }}>{l.replace('-', ' ')}</motion.span>
             </a>
           ))}

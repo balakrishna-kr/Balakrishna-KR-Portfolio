@@ -107,8 +107,9 @@ export default function Scene({ scroll, mobile, light }) {
         <directionalLight position={[-4, -2, 2]} intensity={0.6} />
         <Environment preset="studio" />
         <Rig light={light} />
-        <Monolith scroll={scroll} mobile={mobile} light={light} />
-        <Dust scroll={scroll} count={mobile ? 1100 : 2600} light={light} />
+        {/* Only process and display the 3D monolith on non-mobile devices */}
+        {!mobile && <Monolith scroll={scroll} mobile={mobile} light={light} />}
+        <Dust scroll={scroll} count={mobile ? 400 : 2600} light={light} />
       </Canvas>
     </div>
   )

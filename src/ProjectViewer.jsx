@@ -167,7 +167,7 @@ export default function ProjectViewer({ id = 'projects', label = '05 — Selecte
   return (
     <>
       {/* MOBILE & TABLET LAYOUT: Normal natural vertical page scrolling; horizontal swipe only for the project cards */}
-      <section id={id} data-theme="dark" className="block lg:hidden relative z-10 py-10 min-[360px]:py-14 sm:py-20 max-w-[1500px] mx-auto">
+      <section id={`${id}-mobile`} data-theme="dark" className="block lg:hidden relative z-10 py-10 min-[360px]:py-14 sm:py-20 max-w-[1500px] mx-auto">
         <div className="px-3.5 min-[360px]:px-5 sm:px-8 mb-4 sm:mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="font-mono text-[9px] min-[360px]:text-[11px] uppercase tracking-[0.25em] text-white/45 mb-1.5 sm:mb-3">{label}</p>
