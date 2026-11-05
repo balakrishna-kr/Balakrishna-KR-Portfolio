@@ -188,7 +188,7 @@ function Hero() {
   const letters = 'BALAKRISHNA'.split('')
 
   return (
-    <section id="top" ref={ref} data-theme="light" className="relative z-10 text-[#141414] min-h-[100svh] overflow-hidden flex flex-col justify-between">
+    <section id="top" ref={ref} data-theme="light" className="sticky top-0 md:relative z-10 text-[#141414] h-[100svh] min-h-[100svh] overflow-hidden flex flex-col justify-between bg-[#ece8e1] md:bg-transparent">
       {/* soft light behind the portrait */}
       {/* soft light behind the portrait */}
       <motion.div style={{ opacity: imgOp }} className="absolute left-1/2 bottom-[10%] -translate-x-1/2 w-[120vw] sm:w-[80vw] max-w-[900px] aspect-square rounded-full bg-[radial-gradient(circle,rgba(20,20,20,0.07),transparent_62%)] pointer-events-none z-0" />
@@ -518,9 +518,12 @@ export default function App() {
   const [form, setForm] = useState(false)
   const [light, setLight] = useState(true)
   useEffect(() => {
+    // Only run theme scroll listener on tablet / laptop (disabled on phone dimensions)
+    if (mobile) return
+
     // Top of page is always light (hero). When scrolling down, check active visible section.
     const f = () => {
-      const topBoundary = window.innerHeight * (mobile ? 0.35 : 0.45)
+      const topBoundary = window.innerHeight * 0.45
       if (window.scrollY < topBoundary) {
         setLight(true)
         return
@@ -558,9 +561,9 @@ export default function App() {
       <Cursor />
       <div
         className="fixed inset-0 z-0 transition-colors duration-500 ease-out will-change-[background-color]"
-        style={{ backgroundColor: light ? '#ece8e1' : '#0a0a0a' }}
+        style={{ backgroundColor: mobile ? '#ece8e1' : (light ? '#ece8e1' : '#0a0a0a') }}
       />
-      <Scene scroll={smooth} mobile={mobile} light={light} />
+      <Scene scroll={smooth} mobile={mobile} light={!mobile && light} />
       <motion.div style={{ scaleX: smooth }} className="fixed top-0 left-0 right-0 h-px bg-white origin-left z-50" />
 
       {/* NAV */}
@@ -603,8 +606,10 @@ export default function App() {
       <Hero />
       <Dock items={nav} />
 
-      {/* ABOUT — scroll-lit manifesto */}
-      <section id="about" data-theme="dark" className={`relative z-10 ${pad} pt-8 min-[360px]:pt-10 sm:pt-28 md:pt-44 pb-8 min-[360px]:pb-10 sm:pb-20 max-w-[1500px] mx-auto`}>
+      {/* Dark sheet container: on phones, slides up over the white hero with rounded top corners like the video */}
+      <div className="relative z-20 bg-[#0a0a0a] md:bg-transparent rounded-t-[32px] min-[360px]:rounded-t-[36px] sm:rounded-t-[44px] md:rounded-t-none border-t border-white/10 md:border-t-0 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] md:shadow-none">
+        {/* ABOUT — scroll-lit manifesto */}
+        <section id="about" data-theme="dark" className={`relative z-10 ${pad} pt-10 min-[360px]:pt-12 sm:pt-28 md:pt-44 pb-8 min-[360px]:pb-10 sm:pb-20 max-w-[1500px] mx-auto`}>
         <Label n="01" t="About" />
         <ScrollText text="I'm a BBA Honors student at T. A. Pai Management Institute, Bengaluru with a strong parallel focus on _modern _technology. I bring _business and _management learning together with _tech — taking requirements and turning them into _practical projects." />
         <div className="grid md:grid-cols-3 gap-5 sm:gap-10 md:gap-8 mt-6 min-[360px]:mt-8 sm:mt-24 md:mt-36">
@@ -726,6 +731,7 @@ export default function App() {
           <a href="#top" className="hover:text-white transition-colors">Back to top ↑</a>
         </footer>
       </section>
+      </div>
     </div>
   )
 }
