@@ -273,7 +273,7 @@ export default function ProjectViewer({ id = 'projects', label = '05 — Selecte
                     {items[open].live ? (
                       <a href={items[open].live} target="_blank" rel="noreferrer" className="px-4 min-[360px]:px-6 py-2 min-[360px]:py-3 rounded-full bg-white text-black text-xs sm:text-sm font-medium hover:bg-white/80 transition-colors">Visit live ↗</a>
                     ) : (
-                      <span className="px-4 min-[360px]:px-6 py-2 min-[360px]:py-3 rounded-full bg-white/10 text-white/70 text-xs sm:text-sm font-mono uppercase tracking-[0.15em] border border-white/15">Coming Soon · TAPMI</span>
+                      <span className="px-4 min-[360px]:px-6 py-2 min-[360px]:py-3 rounded-full bg-white/10 text-white/70 text-xs sm:text-sm font-mono uppercase tracking-[0.15em] border border-white/15">{items[open].image ? 'TAPMI Coursework' : 'Coming Soon · TAPMI'}</span>
                     )}
                     {items[open].code && <a href={items[open].code} target="_blank" rel="noreferrer" className="px-4 min-[360px]:px-6 py-2 min-[360px]:py-3 rounded-full border border-white/20 text-xs sm:text-sm hover:bg-white/10 transition-colors">Source</a>}
                   </div>,
